@@ -41,7 +41,7 @@ impl LittleComputer3 {
         Ok(())
     }
 
-    pub fn execute_program(&mut self) -> Result<(), Error> {
+    pub fn execute_program(&mut self, debug: bool) -> Result<(), Error> {
         let mut input = std::io::stdin();
         let mut output = std::io::stdout();
 
@@ -54,8 +54,10 @@ impl LittleComputer3 {
                 RegistersEnum::ProgramCounter,
                 self.registers.get(RegistersEnum::ProgramCounter) + 1,
             );
-            // println!(" => {instruction:?}");
-            // println!(" => {:?}", self.registers);
+            if debug {
+                println!(" => {instruction:?}");
+                println!(" => {:?}", self.registers);
+            }
             instruction.execute(
                 &mut self.registers,
                 &mut self.memory,

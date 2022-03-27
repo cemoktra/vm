@@ -5,6 +5,8 @@ use clap::Parser;
 #[derive(Parser, Debug)]
 #[clap(author, version, about, long_about = None)]
 struct Args {
+    #[clap(short, long)]
+    debug: bool,
     program: String,
 }
 
@@ -32,7 +34,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let mut lc3 = LittleComputer3::default();
     lc3.load_program(file)?;
-    lc3.execute_program()?;
+    lc3.execute_program(args.debug)?;
 
     restore_terminal(termios)?;
 
