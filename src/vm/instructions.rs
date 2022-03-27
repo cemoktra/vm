@@ -7,10 +7,6 @@ pub trait InstructionsTrait {
     type RegisterSet;
     type Error;
 
-    fn read(value: Self::ValueType) -> Result<Self, Self::Error>
-    where
-        Self: Sized;
-
     fn execute<R, M, I, O>(
         &self,
         registers: &mut R,

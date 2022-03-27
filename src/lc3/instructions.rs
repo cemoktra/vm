@@ -110,16 +110,10 @@ fn sign_extend(mut x: u16, bit_count: u8) -> u16 {
     x
 }
 
-impl InstructionsTrait for Instructions {
-    type ValueType = u16;
-    type InstructionSet = Instructions;
-    type RegisterSet = RegistersEnum;
+impl TryFrom<u16> for Instructions {
     type Error = Error;
 
-    fn read(value: Self::ValueType) -> Result<Self, Self::Error>
-    where
-        Self: Sized,
-    {
+    fn try_from(value: u16) -> Result<Self, Self::Error> {
         match value >> 12 {
             0 => Ok(Instructions::Branch {
                 pc_offset: sign_extend(value & 0x1FF, 9),
@@ -214,6 +208,13 @@ impl InstructionsTrait for Instructions {
             _ => Err(Error::UnknownInstruction(value)),
         }
     }
+}
+
+impl InstructionsTrait for Instructions {
+    type ValueType = u16;
+    type InstructionSet = Instructions;
+    type RegisterSet = RegistersEnum;
+    type Error = Error;
 
     fn execute<R, M, I, O>(
         &self,
