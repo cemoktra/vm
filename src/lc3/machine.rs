@@ -46,10 +46,13 @@ impl LittleComputer3 {
         let mut output = std::io::stdout();
 
         while self.registers.get(RegistersEnum::ProgramCounter) < u16::MAX {
-            let instruction: Instructions = self.memory.read(
-                self.registers.get(RegistersEnum::ProgramCounter),
-                &mut input,
-            ).try_into()?;
+            let instruction: Instructions = self
+                .memory
+                .read(
+                    self.registers.get(RegistersEnum::ProgramCounter),
+                    &mut input,
+                )
+                .try_into()?;
             self.registers.set(
                 RegistersEnum::ProgramCounter,
                 self.registers.get(RegistersEnum::ProgramCounter) + 1,

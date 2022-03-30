@@ -1,14 +1,5 @@
 use lc3::lc3::machine::LittleComputer3;
 use termios::*;
-use clap::Parser;
-
-#[derive(Parser, Debug)]
-#[clap(author, version, about, long_about = None)]
-struct Args {
-    #[clap(short, long)]
-    debug: bool,
-    program: String,
-}
 
 fn init_terminal() -> Result<Termios, std::io::Error> {
     let termios = termios::Termios::from_fd(0)?;
@@ -26,15 +17,39 @@ fn restore_terminal(termios: Termios) -> std::io::Result<()> {
     tcsetattr(0, TCSANOW, &termios)
 }
 
+fn usage() {
+    println!("Usage: lc3 [--debug] path/to/program");
+}
+
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let termios = init_terminal()?;
 
-    let args = Args::parse();
-    let file = std::fs::File::open(args.program)?;
+    let args: Vec<String> = std::env::args().collect();
+    let (file, debug) = match args.len() {
+        2 => (args[1].clone(), false),
+        3 => {
+            if args[1] == "--debug" {
+                (args[2].clone(), true)
+            } else {
+                return {
+                    usage();
+                    Ok(())
+                };
+            }
+        }
+        _ => {
+            return {
+                usage();
+                Ok(())
+            };
+        }
+    };
+
+    let file = std::fs::File::open(file)?;
 
     let mut lc3 = LittleComputer3::default();
     lc3.load_program(file)?;
-    lc3.execute_program(args.debug)?;
+    lc3.execute_program(debug)?;
 
     restore_terminal(termios)?;
 
